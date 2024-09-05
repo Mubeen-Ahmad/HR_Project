@@ -1,20 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h2>Create HR User</h2>
-    <form id="create-hr-user-form">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <label for="role">Role:</label>
-        <select id="role" name="role">
-            <option value="hr">HR</option>
-        </select>
-        <button type="submit">Create User</button>
-    </form>
-    <p id="success-message"></p>
-    <p id="error-message"></p>
+
+
+<div class="form-container">
+    <main class="form-signin my-4 text-center ">
+        <form id="create-hr-user-form">
+
+
+            <div class="form-floating">
+                <input type="text" class="form-control" id="username" placeholder="username" name="username" required>
+                <label for="username">Username</label>
+            </div><br>
+
+            <div class="form-floating">
+                <input type="password" class="form-control" id="password" placeholder="password" name="password"
+                    required>
+                <label for="password">Password</label>
+            </div>
+
+            <br>
+
+            <div class="form-floating">
+                <input type="confrom_password" class="form-control" id="confrom_password" placeholder="confrom Password"
+                    name="confrom_password" required>
+                <label for="confrom_password">Confrom Password</label>
+            </div>
+
+
+
+            <div class="checkbox mb-3"></div>
+
+            <button class="w-100 btn btn-lg btn-dark" type="submit">Create</button>
+        </form>
+    </main>
 </div>
 
 <script>
@@ -22,38 +40,70 @@
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
-        const role = document.getElementById('role').value;
+        const confrom_password = document.getElementById('confrom_password').value;
+        const role = 'hr';
         const token = document.cookie.split("=")[1].split(";")[0];
 
-        const response = await fetch('/post_create-hr-user/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ username, password, role })
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            const successMessageElement = document.getElementById('success-message');
-            successMessageElement.textContent = data.msg;
-
-            // Clear form values
-            document.getElementById('create-hr-user-form').reset();
+        if (password !== confrom_password) {
+            message("Password Not Matched !", "red");
+            myModal.show();
 
             setTimeout(() => {
-                successMessageElement.textContent = '';
-            }, 2000); // Hide message after 2 seconds
-        } else {
-            const errorMessageElement = document.getElementById('error-message');
-            errorMessageElement.textContent = data.detail;
+                myModal.hide();
 
-            setTimeout(() => {
-                errorMessageElement.textContent = '';
             }, 2000); // Hide message after 2 seconds
         }
+
+        else {
+
+
+            const response = await fetch('/post_create-hr-user/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ username, password, role })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+
+                message(data.msg, "green");
+                myModal.show();
+
+                setTimeout(() => {
+                    myModal.hide();
+
+                }, 2000); // Hide message after 2 seconds
+
+
+                document.getElementById('create-hr-user-form').reset();
+
+            } else {
+
+                message(data.detail + " !", "red");
+                myModal.show();
+
+                setTimeout(() => {
+                    myModal.hide();
+
+                }, 2000); // Hide message after 2 seconds
+
+
+            }
+
+
+        }
+
+
+
+
+
+
     });
 </script>
+
+
 {% endblock %}

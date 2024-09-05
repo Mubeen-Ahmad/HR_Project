@@ -1,21 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container">
-    <h2>Login</h2>
-    <form id="login-form">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Login</button>
-    </form>
-    <p id="error-message"></p>
+
+<div class="form-container">
+    <main class="form-signin text-center ">
+        <form id="login-form">
+            <img class="mb-4" src="/static/images/logo.png" alt="" width="150" height="150">
+
+            <div class="form-floating">
+                <input type="text" class="form-control" id="username" placeholder="username" name="username" required>
+                <label for="username">Username</label>
+            </div>
+
+            <div class="form-floating">
+                <input type="password" class="form-control" id="password" placeholder="password" name="password"
+                    required>
+                <label for="password">Password</label>
+            </div>
+
+            <div class="checkbox mb-3"></div>
+
+            <button class="w-100 btn btn-lg btn-dark" type="submit">Log in</button>
+        </form>
+    </main>
 </div>
+
 <script>
     document.getElementById('login-form').addEventListener('submit', async (event) => {
         event.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
+
         const response = await fetch('/token', {
             method: 'POST',
             headers: {
@@ -27,18 +41,36 @@
             })
         });
         const data = await response.json();
+
         if (response.ok) {
             document.cookie = `access_token=${data.access_token}; path=/;`;
             document.cookie = `refresh_token=${data.refresh_token}; path=/;`;
             window.location.href = '/';
-        } else {
-            const errorMessageElement = document.getElementById('error-message');
-            errorMessageElement.textContent = data.detail;
-            
+
+            message("Login", "green");
+            myModal.show();
+
+
             setTimeout(() => {
-                errorMessageElement.textContent = '';
+                myModal.hide();
+
+            }, 2000);
+        } else {
+
+            message(data.detail, "red");
+            myModal.show();
+
+
+            setTimeout(() => {
+                myModal.hide();
+
             }, 2000); // Hide message after 2 seconds
         }
     });
 </script>
+
+
+
+
+</body>
 {% endblock %}

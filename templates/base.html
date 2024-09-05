@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Management System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            {% if user_role %}
+            <a href="/">Home</a>
+            {% if user_role == 'admin' %}
+            <a href="/view-complaints">Check Complaints</a>
+            <a href="/create-hr-user">Create User</a>
+            {% elif user_role == 'hr' %}
+            <a href="/launch-complaint">Launch Complaint</a>
+            {% endif %}
+            <a href="/logout">Logout</a>
+            {% else %}
+            <a href="/login">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+
+</html>

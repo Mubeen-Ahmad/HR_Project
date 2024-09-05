@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Login</h2>
+    <form id="login-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Login</button>
+    </form>
+    <p id="error-message"></p>
+</div>
+<script>
+    document.getElementById('login-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const response = await fetch('/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                'username': username,
+                'password': password
+            })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            document.cookie = `access_token=${data.access_token}; path=/;`;
+            document.cookie = `refresh_token=${data.refresh_token}; path=/;`;
+            window.location.href = '/';
+        } else {
+            const errorMessageElement = document.getElementById('error-message');
+            errorMessageElement.textContent = data.detail;
+            
+            setTimeout(() => {
+                errorMessageElement.textContent = '';
+            }, 2000); // Hide message after 2 seconds
+        }
+    });
+</script>
+{% endblock %}

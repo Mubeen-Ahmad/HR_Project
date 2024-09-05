@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Create HR User</h2>
+    <form id="create-hr-user-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <label for="role">Role:</label>
+        <select id="role" name="role">
+            <option value="hr">HR</option>
+        </select>
+        <button type="submit">Create User</button>
+    </form>
+    <p id="success-message"></p>
+    <p id="error-message"></p>
+</div>
+
+<script>
+    document.getElementById('create-hr-user-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const role = document.getElementById('role').value;
+        const token = document.cookie.split("=")[1].split(";")[0];
+
+        const response = await fetch('/post_create-hr-user/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ username, password, role })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            const successMessageElement = document.getElementById('success-message');
+            successMessageElement.textContent = data.msg;
+
+            // Clear form values
+            document.getElementById('create-hr-user-form').reset();
+
+            setTimeout(() => {
+                successMessageElement.textContent = '';
+            }, 2000); // Hide message after 2 seconds
+        } else {
+            const errorMessageElement = document.getElementById('error-message');
+            errorMessageElement.textContent = data.detail;
+
+            setTimeout(() => {
+                errorMessageElement.textContent = '';
+            }, 2000); // Hide message after 2 seconds
+        }
+    });
+</script>
+{% endblock %}

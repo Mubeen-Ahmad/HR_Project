@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Launch Complaint</h2>
+    <form id="launch-complaint-form">
+        <label for="description">Complaint Description:</label>
+        <textarea id="description" name="description" required></textarea>
+        <button type="submit">Submit Complaint</button>
+    </form>
+    <p id="success-message"></p>
+    <p id="error-message"></p>
+</div>
+<script>
+    document.getElementById('launch-complaint-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const description = document.getElementById('description').value;
+        const response = await fetch('/launch-complaint/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${document.cookie.replace(/(?:(?:^|.*;\s*)access_token\s*=\s*([^;]*).*$)|^.*$/, "$1")}`
+            },
+            body: JSON.stringify({ description })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            document.getElementById('success-message').textContent = data.msg;
+        } else {
+            document.getElementById('error-message').textContent = data.detail;
+        }
+    });
+</script>
+{% endblock %}

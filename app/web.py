@@ -116,7 +116,7 @@ async def index(request: Request):
 
         try:
             user = get_current_user(token)
-            print(user)
+
 
             return templates.TemplateResponse(
                 "index.html",
